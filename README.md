@@ -1,5 +1,10 @@
 ## Santander ProductRecommendation (Exploratory analysis)
 
+## Introduction
+
+
+
+
 ## Load data and packages
 ``` R
 df = fread("train_ver2.csv")
