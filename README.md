@@ -50,17 +50,19 @@ library(ggplot2)
 ```
 #### Customer index (Ind_neuvo)
 ``` R
+  table(train$ind_nuevo)
   active = train[is.na(train$ind_nuevo), ] %>% 
-    group_by(ncodpers) %>% 
-    summarise(active = n()) %>% 
-    select(active, ncodpers)
-  active$active[active$active > 6]
-	## numeric(0) ##
+    select(ncodpers) %>% 
+    group_by(ncodpers) %>%
+    summarise(active = n())
+  active$active[active$active > 6] 
+
+  ## numeric(0) ##
 ```
-	
-``` R 
-train$ind_nuevo[is.na(train$ind_nuevo)] = 1
-```
+```R
+  train$ind_nuevo[is.na(train$ind_nuevo)] = 1	
+```  
+
 #### Customer seniority (antiguedad)
 
 ``` R
