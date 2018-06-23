@@ -59,9 +59,27 @@ library(ggplot2)
 ```
 	
 ``` R 
-	train$ind_nuevo[is.na(train$ind_nuevo)] = 1
+train$ind_nuevo[is.na(train$ind_nuevo)] = 1
 ```
 #### Customer seniority (antiguedad)
+
+``` R
+  table(train$antiguedad)   # -999999 detected. Should be fixed.
+  train %>% filter(antiguedad == -999999) %>% select(ind_nuevo)
+  train$antiguedad[train$antiguedad == -999999] = 0
+  train[is.na(train$antiguedad)] %>% select(ind_nuevo) %>% summary()
+  
+##	ind_nuevo
+	 Min.   :1  
+	 1st Qu.:1  
+	 Median :1  
+	 Mean   :1  
+	 3rd Qu.:1  
+	 Max.   :1
+```
+``` R
+train[is.na(train$antiguedad)] = min(train$antiguedad, na.rm = T)
+```
 
 #### First/primary customer (indrel)
 
