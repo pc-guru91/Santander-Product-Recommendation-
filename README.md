@@ -3,6 +3,9 @@
 ## Load data and packages
 ``` R
 df = fread("train_ver2.csv")
+
+## df = fread("train_ver2.csv")
+## Read 13647309 rows and 48 (of 48) columns from 2.135 GB file in 00:00:53
 ```
 
 ```R
@@ -16,13 +19,13 @@ library(ggplot2)
 ### Identify missing values
 ``` R
            fecha_dato              ncodpers          ind_empleado       pais_residencia                  sexo                   age 
-                    0                     0                     0                     0                     0                 27734 
+                    0                     0                     0                     0                     0                 13018 
            fecha_alta             ind_nuevo            antiguedad                indrel        ult_fec_cli_1t           indrel_1mes 
-                    0                 27734                 27734                 27734                     0                     0 
+                    0                 13018                 13018                 13018                     0                     0 
           tiprel_1mes               indresi                indext              conyuemp         canal_entrada               indfall 
                     0                     0                     0                     0                     0                     0 
               tipodom              cod_prov               nomprov ind_actividad_cliente                 renta              segmento 
-                27735                 93591                     0                 27734               2794375                     0 
+                13019                 56633                     0                 13018                864285                     0 
     ind_ahor_fin_ult1     ind_aval_fin_ult1      ind_cco_fin_ult1     ind_cder_fin_ult1      ind_cno_fin_ult1     ind_ctju_fin_ult1 
                     0                     0                     0                     0                     0                     0 
     ind_ctma_fin_ult1     ind_ctop_fin_ult1     ind_ctpp_fin_ult1     ind_deco_fin_ult1     ind_deme_fin_ult1     ind_dela_fin_ult1 
@@ -30,16 +33,34 @@ library(ggplot2)
     ind_ecue_fin_ult1     ind_fond_fin_ult1      ind_hip_fin_ult1     ind_plan_fin_ult1     ind_pres_fin_ult1     ind_reca_fin_ult1 
                     0                     0                     0                     0                     0                     0 
     ind_tjcr_fin_ult1     ind_valo_fin_ult1      ind_viv_fin_ult1       ind_nomina_ult1     ind_nom_pens_ult1       ind_recibo_ult1 
-                    0                     0                     0                 16063                 16063                     0 
+                    0                     0                     0                  9081                  9081                     0 
                 
 ```
 
 ### Impute missing values
 
 #### Age
-
+``` R
+  ggplot(train, aes(x = age))+
+    geom_bar(fill = 'steelblue', color = 'black')  
+  train$age[(train$age < 20)] = mean(train$age[(train$age >= 20) & (train$age <= 30)], na.rm = T)
+  train$age[(train$age > 100)] = mean(train$age[(train$age >= 30) & (train$age <= 100)], na.rm = T)
+  train$age[is.na(train$age)] = median(train$age, na.rm = T)
+  train$age = round(train$age)
+```
 #### Customer index (Ind_neuvo)
-
+``` R
+  active = train[is.na(train$ind_nuevo), ] %>% 
+    group_by(ncodpers) %>% 
+    summarise(active = n()) %>% 
+    select(active, ncodpers)
+  active$active[active$active > 6]
+	## numeric(0) ##
+```
+	
+``` R 
+	train$ind_nuevo[is.na(train$ind_nuevo)] = 1
+```
 #### Customer seniority (antiguedad)
 
 #### First/primary customer (indrel)
