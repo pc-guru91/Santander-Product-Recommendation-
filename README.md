@@ -19,9 +19,8 @@ library(dplyr)
 library(ggplot2)
 ```
 
-## Data cleaning
+## Data cleaning Part 1: Identify N/A values
 
-### Identify missing values
 ``` R
            fecha_dato              ncodpers          ind_empleado       pais_residencia                  sexo                   age 
                     0                     0                     0                     0                     0                 13018 
@@ -90,17 +89,92 @@ train[is.na(train$antiguedad)] = min(train$antiguedad, na.rm = T)
 
 #### First/primary customer (indrel)
 
-#### Address type (tipodom)
-
-#### Province code (cod_prov)
+#### Address type (tipodom) & province code (cod_prov)
+Since both tipodom and cod_prov don't seem to be too useful due to other relevant information available such as pais_residencia and nomprov. Therefore, we will remove these two columns from data set. 
+``` R
+train = train[, -c('tipodom', 'cod_prov')]
+```
 
 #### Activity index (ind_actividad_cliente)
-
+  ``` R
+  table(train$ind_actividad_cliente)
+  train$ind_actividad_cliente[is.na(train$ind_actividad_cliente)] = median(train$ind_actividad_cliente, na.rm = T)
+  ```
 #### Gross income of the household (renta)
-
+``` R
+  summary(train$renta)
+  train %>% filter(!is.na(renta)) %>% group_by(nomprov) %>% 
+    summarise(median = median(renta)) %>% 
+    ggplot(aes(reorder(x = nomprov, median), y = median))+
+    geom_point(color = "steelblue3")
+ 
+  incomes = train %>% 
+    merge(train %>% group_by(nomprov) %>% summarise(med.income = median(renta, na.rm = T)), by = 'nomprov') %>% 
+    select(nomprov, med.income) %>% 
+    arrange(nomprov)
+  
+  train = train %>% arrange(nomprov)
+  
+  train$renta[is.na(train$renta)] = incomes$med.income[is.na(train$renta)]
+```
 #### Product: Payroll (ind_nomina_ult1)
-
+``` R
+  table(train$ind_nomina_ult1)
+  train$ind_nomina_ult1[is.na(train$ind_nomina_ult1)] = 0
+```
 #### Product: Pensions (ind_nom_pens_ult1)
+``` R
+  table(train$ind_nom_pens_ult1)
+  train$ind_nom_pens_ult1[is.na(train$ind_nom_pens_ult1)] = 0
+```
+
+## Data cleaning Part 2: Identify empty values
+Now, we will replace empty values with either most observed values or create a new category called unknown. 
+
+#### Customer's country residence (pais_residencia)
+
+#### Customer's sex (sexo)
+
+#### Laste date as primary customer (ult_fec_cli_1t)
+
+#### Customer type at the beginning of the month (indrel_1mes)
+
+#### Customer relation type at the beginning of the month (tiprel_1mes)
+
+#### Residence index (indresi)
+
+####   #Foreign indes (indext)
+    
+#### Spouse Index (conyuemp)
+    
+#### Type of channel (canal_entrada)
+  
+#### Deceased index (indfall)
+  
+#### Province name (nomprov)
+
+#### Segmentation (segmento)
+
+
+## Data cleaning Part 3: Identify duplicate values
+  ``` R
+  distinct(train, fecha_dato, ncodpers) 
+  ##
+490     2015-01-28   675057
+491     2015-01-28   670240
+492     2015-01-28   668959
+493     2015-01-28   668960
+494     2015-01-28   668996
+495     2015-01-28   670852
+496     2015-01-28   652408
+497     2015-01-28   652409
+498     2015-01-28   651686
+499     2015-01-28   654310
+500     2015-01-28   654244
+ [ reached getOption("max.print") -- omitted 5230695 rows ]
+  ```
+  
+The results hows that there are no duplicate values.
 
 
 ## Data visualizations
