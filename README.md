@@ -88,6 +88,10 @@ train[is.na(train$antiguedad)] = min(train$antiguedad, na.rm = T)
 ```
 
 #### First/primary customer (indrel)
+``` R
+  table(train$indrel)
+  train$indrel[is.na(train$indrel)] = 1 # Options are either 1 or 99. Replace N/A with most common value.
+```
 
 #### Address type (tipodom) & province code (cod_prov)
 Since both tipodom and cod_prov don't seem to be too useful due to other relevant information available such as pais_residencia and nomprov. Therefore, we will remove these two columns from data set. 
@@ -132,29 +136,70 @@ train = train[, -c('tipodom', 'cod_prov')]
 Now, we will replace empty values with either most observed values or create a new category called unknown. 
 
 #### Customer's country residence (pais_residencia)
-
+``` R
+  table(train$pais_residencia)
+  train$pais_residencia[train$pais_residencia == ""] = "unknown"
+```
 #### Customer's sex (sexo)
-
+``` R
+  table(train$sexo)
+  train$sexo[train$sexo == ""] = "unknown"
+```
 #### Laste date as primary customer (ult_fec_cli_1t)
-
+``` R
+  table(train$ult_fec_cli_1t)
+  train$ult_fec_cli_1t[train$ult_fec_cli_1t == ""] = "unknown"
+```
 #### Customer type at the beginning of the month (indrel_1mes)
-
+``` R
+  table(train$indrel_1mes)
+  train$indrel_1mes[train$indrel_1mes == ""] = "1"
+  train$indrel_1mes[train$indrel_1mes == "1.0"] = "1"
+  train$indrel_1mes[train$indrel_1mes == "2.0"] = "2"
+  train$indrel_1mes[train$indrel_1mes == "3.0"] = "3"
+  train$indrel_1mes[train$indrel_1mes == "4.0"] = "4"
+  train$indrel_1mes[train$indrel_1mes == "P"] = "5" #Converts a group that contains a letter to a number. 
+```
 #### Customer relation type at the beginning of the month (tiprel_1mes)
-
+``` R
+  table(train$tiprel_1mes)
+  train$tiprel_1mes[train$tiprel_1mes == ""] = "A"
+```
 #### Residence index (indresi)
-
+``` R
+  table(train$indresi)
+  train$indresi[train$indresi == ""] = "S"
+```
 ####   #Foreign indes (indext)
-    
+``` R
+  table(train$indext)
+  train$indext[train$indext == ""] = "N"
+```    
 #### Spouse Index (conyuemp)
-    
+``` R
+  table(train$conyuemp)
+  train$conyuemp[train$conyuemp == ""] = "unknown"
+```    
 #### Type of channel (canal_entrada)
-  
+``` R
+  table(train$canal_entrada)
+  train$canal_entrada[train$canal_entrada == ""] = "unknown"
+```  
 #### Deceased index (indfall)
-  
+``` R
+  table(train$indfall)
+  train$indfall[train$indfall == ""] = "N"
+```  
 #### Province name (nomprov)
-
+``` R
+  table(nomprov)
+  train$nomprov[train$nomprov==""] = "unknown"
+```
 #### Segmentation (segmento)
-
+``` R
+  table(train$segmento)  
+  train$segmento[train$segmento == ""] = "02 - PARTICULARES"
+```
 
 ## Data cleaning Part 3: Identify duplicate values
   ``` R
